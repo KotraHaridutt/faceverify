@@ -61,19 +61,9 @@ def create_test_face_image(width=400, height=400, face_color=(255, 220, 177), fi
 
 def create_large_test_image():
     """Create a test image larger than 5MB for size validation testing"""
-    # Create a very large image (should exceed 5MB)
-    img = Image.new('RGB', (3000, 3000), color=(255, 255, 255))
-    draw = ImageDraw.Draw(img)
-    
-    # Add some content to make it larger
-    for i in range(0, 3000, 50):
-        draw.line([(0, i), (3000, i)], fill=(i % 255, (i*2) % 255, (i*3) % 255), width=2)
-    
-    img_bytes = io.BytesIO()
-    img.save(img_bytes, format='JPEG', quality=100)  # High quality to increase size
-    img_bytes.seek(0)
-    
-    return img_bytes
+    # Create raw data that's definitely larger than 5MB
+    large_data = b'x' * (6 * 1024 * 1024)  # 6MB of data
+    return io.BytesIO(large_data)
 
 def test_api_health():
     """Test if the API is accessible"""
