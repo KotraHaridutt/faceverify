@@ -188,7 +188,7 @@ def test_file_type_validation():
         normal_image = create_test_face_image()
         
         files = {
-            'image1': ('fake_image.txt', io.BytesIO(text_content), 'text/plain'),
+            'image1': ('fake_image.jpg', io.BytesIO(text_content), 'image/jpeg'),
             'image2': ('normal_face.jpg', normal_image, 'image/jpeg')
         }
         
