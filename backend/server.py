@@ -65,7 +65,7 @@ def run_deepface_verification(img1_path: str, img2_path: str) -> Dict[str, Any]:
             img1_path=img1_path,
             img2_path=img2_path,
             model_name='ArcFace',
-            enforce_detection=True,
+            enforce_detection=False,
             detector_backend='opencv'
         )
         return result
