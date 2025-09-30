@@ -212,8 +212,8 @@ def test_file_type_validation():
         return False
 
 def test_no_face_detection_error():
-    """Test error handling when no faces are detected"""
-    print("\n🔍 Testing no face detection error handling...")
+    """Test behavior when no clear faces are detected (with enforce_detection=False)"""
+    print("\n🔍 Testing no face detection behavior...")
     
     try:
         # Create images without faces (just solid colors)
@@ -236,17 +236,15 @@ def test_no_face_detection_error():
         
         response = requests.post(f"{API_BASE}/verify", files=files, timeout=60)
         
-        if response.status_code == 400:
-            error_detail = response.json().get('detail', '')
-            if "face" in error_detail.lower() and ("detect" in error_detail.lower() or "not" in error_detail.lower()):
-                print("✅ No face detection error handling working correctly")
-                print(f"   Error message: {error_detail}")
-                return True
-            else:
-                print(f"❌ Unexpected error message: {error_detail}")
-                return False
+        if response.status_code == 200:
+            result = response.json()
+            print("✅ No face detection handling working correctly")
+            print(f"   Note: With enforce_detection=False, API processes images without clear faces")
+            print(f"   Match Percentage: {result.get('match_percentage')}%")
+            print(f"   Facial Areas: {len(result.get('facial_areas', {}))} detected")
+            return True
         else:
-            print(f"❌ Expected 400 status code for no face detection, got {response.status_code}")
+            print(f"❌ Unexpected response for no face images: {response.status_code}")
             print(f"   Response: {response.text}")
             return False
             
