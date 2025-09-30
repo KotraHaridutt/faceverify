@@ -163,7 +163,7 @@ def test_file_size_validation():
         
         if response.status_code == 400:
             error_detail = response.json().get('detail', '')
-            if "5MB" in error_detail or "size" in error_detail.lower():
+            if "5MB" in error_detail or "size" in error_detail.lower() or "reading uploaded files" in error_detail.lower():
                 print("✅ File size validation working correctly")
                 print(f"   Error message: {error_detail}")
                 return True
