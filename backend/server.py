@@ -27,6 +27,23 @@ db = client[os.environ['DB_NAME']]
 # Create the main app without a prefix
 app = FastAPI(title="FaceVerify AI", description="AI-powered facial recognition API")
 
+# +++ NEW ROBUST CORS LOGIC +++
+# Get the comma-separated string of origins from the environment variable
+# Default to localhost for local development
+cors_origins_str = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+
+# Split the string into a list and strip any whitespace from each origin
+origins = [origin.strip() for origin in cors_origins_str.split(',')]
+
+# Add the CORS middleware to the app
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
@@ -162,15 +179,10 @@ async def verify_faces(
         error_message = str(e)
         
         # Handle specific DeepFace errors
-        if "Face could not be detected" in error_message:
+        if "Face could not be detected" in error_message or "No face detected" in error_message:
             raise HTTPException(
                 status_code=400,
-                detail="Face not detected in one or both of the images. Please use a clearer photo with a visible face."
-            )
-        elif "No face detected" in error_message:
-            raise HTTPException(
-                status_code=400,
-                detail="No face detected in the uploaded images. Please ensure faces are clearly visible."
+                detail="Face not detected in one or both images. Please use a clearer photo."
             )
         else:
             logging.error(f"Face verification error: {error_message}")
@@ -198,14 +210,6 @@ async def get_status_checks():
 
 # Include the router in the main app
 app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Configure logging
 logging.basicConfig(
