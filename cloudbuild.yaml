@@ -4,7 +4,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-repo/faceverify-backend:$COMMIT_SHA'
+      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-app/faceverify-backend:$COMMIT_SHA'
       - './backend' # Specifies that the Dockerfile is in the backend directory
     id: 'Build'
 
