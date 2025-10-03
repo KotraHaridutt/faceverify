@@ -1,0 +1,38 @@
+steps:
+  # 1. Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-repo/faceverify-backend:$COMMIT_SHA'
+      - './backend' # Specifies that the Dockerfile is in the backend directory
+    id: 'Build'
+
+  # 2. Push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-repo/faceverify-backend:$COMMIT_SHA'
+    id: 'Push'
+
+  # 3. Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'faceverify-backend' # The name of your Cloud Run service
+      - '--image'
+      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-repo/faceverify-backend:$COMMIT_SHA'
+      - '--region'
+      - '${_CLOUD_RUN_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8000'
+      - '--memory'
+      - '1Gi' # Allocating 1GB of memory to solve the previous issue
+      - '--set-env-vars'
+      - 'MONGO_URL=${_MONGO_URL},DB_NAME=${_DB_NAME},CORS_ORIGINS=${_CORS_ORIGINS}'
+    id: 'Deploy'
