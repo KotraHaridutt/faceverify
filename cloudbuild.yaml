@@ -12,7 +12,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-repo/faceverify-backend:$COMMIT_SHA'
+      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-app/faceverify-backend:$COMMIT_SHA'
     id: 'Push'
 
   # 3. Deploy to Cloud Run
@@ -23,7 +23,7 @@ steps:
       - 'deploy'
       - 'faceverify-backend' # The name of your Cloud Run service
       - '--image'
-      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-repo/faceverify-backend:$COMMIT_SHA'
+      - '${_ARTIFACT_REGISTRY_REGION}-docker.pkg.dev/${_GCP_PROJECT_ID}/faceverify-app/faceverify-backend:$COMMIT_SHA'
       - '--region'
       - '${_CLOUD_RUN_REGION}'
       - '--platform'
